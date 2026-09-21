@@ -1,0 +1,24 @@
+workflows:
+  android-debug:
+    name: Build APK
+    instance_type: linux_x2
+    environment:
+      java: 17
+    scripts:
+      - name: Unzip project
+        script: |
+          unzip -o MyDailyPath.zip -d .
+      - name: Install Gradle 8.9
+        script: |
+          wget -q https://services.gradle.org/distributions/gradle-8.9-bin.zip -O gradle.zip
+          unzip -q gradle.zip -d $HOME
+          echo "export PATH=$HOME/gradle-8.9/bin:\$PATH" >> $CM_ENV
+      - name: Create local.properties
+        script: |
+          echo "sdk.dir=\$ANDROID_SDK_ROOT" > MyDailyPath/local.properties
+      - name: Build APK
+        script: |
+          cd MyDailyPath
+          gradle assembleDebug
+    artifacts:
+      - MyDailyPath/**/*.apk
